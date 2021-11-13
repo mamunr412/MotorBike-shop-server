@@ -23,7 +23,8 @@ async function run() {
         const database = client.db('motorbike_shop');
         const ProductsCollection = database.collection("products");
         const usersCollection = database.collection("users");
-        const oderColletion = database.collection('allOders')
+        const oderColletion = database.collection('allOders');
+        const reviewCollection = database.collection('reviews')
 
         // get all products 
         app.get('/products', async (req, res) => {
@@ -69,8 +70,6 @@ async function run() {
             res.json(result);
 
         });
-
-
         // get all oders
         app.get('/allOders', async (req, res) => {
             const result = await oderColletion.find({}).toArray();
@@ -91,10 +90,7 @@ async function run() {
             const result = await ProductsCollection.insertOne(product);
             res.json(result);
 
-        })
-
-
-
+        });
         app.get('/users', async (req, res) => {
             const result = await usersCollection.find({}).toArray()
             res.json(result)
@@ -122,8 +118,18 @@ async function run() {
             if (user?.role === "admin") {
                 isAdmin = true;
             }
-            res.json({ admin: isAdmin })
-        })
+            res.json({ admin: isAdmin });
+        });
+        // get reviews from client site 
+        app.post('/reviews', async (req, res) => {
+            const result = await reviewCollection.insertOne(req.body);
+            res.json(result);
+        });
+        // get all reviews from server 
+        app.get('/reviews', async (req, res) => {
+            const result = await reviewCollection.find({}).toArray();
+            res.json(result)
+        });
 
     } finally {
         // await client.close();
